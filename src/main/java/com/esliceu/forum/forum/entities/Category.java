@@ -1,5 +1,6 @@
 package com.esliceu.forum.forum.entities;
 
+import com.google.gson.annotations.Expose;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -18,6 +19,7 @@ public class Category {
     private String color;
 
     // Relació 1-N amb Topic
+    @Expose(serialize = false, deserialize = false)
     @OneToMany(mappedBy = "category", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private Set<Topic> topics;
 
@@ -28,7 +30,7 @@ public class Category {
             joinColumns = { @JoinColumn(name = "category_id") },
             inverseJoinColumns = { @JoinColumn(name = "user_id") }
     )
-    private Set<User> users;
+    private Set<User> moderators;
 
     public long getCategory_id() {
         return category_id;
@@ -78,11 +80,24 @@ public class Category {
         this.topics = topics;
     }
 
-    public Set<User> getUsers() {
-        return users;
+    public Set<User> getModerators() {
+        return moderators;
     }
 
-    public void setUsers(Set<User> users) {
-        this.users = users;
+    public void setModerators(Set<User> moderators) {
+        this.moderators = moderators;
+    }
+
+
+
+    @Override
+    public String toString() {
+        return "Category{" +
+                "category_id=" + category_id +
+                ", slug='" + slug + '\'' +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", color='" + color + '\'' +
+                '}';
     }
 }

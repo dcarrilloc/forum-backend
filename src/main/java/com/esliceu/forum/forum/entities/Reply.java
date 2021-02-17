@@ -1,5 +1,6 @@
 package com.esliceu.forum.forum.entities;
 
+import com.google.gson.annotations.Expose;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -17,6 +18,7 @@ public class Reply {
     private LocalDateTime updatedAt;
 
     // Relació 1-N amb Topic
+    @Expose(serialize = false, deserialize = false)
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "topic_id")
     private  Topic topic;
@@ -72,5 +74,17 @@ public class Reply {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+
+
+    @Override
+    public String toString() {
+        return "Reply{" +
+                "reply_id=" + reply_id +
+                ", content='" + content + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
     }
 }

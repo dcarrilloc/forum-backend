@@ -1,5 +1,6 @@
 package com.esliceu.forum.forum.entities;
 
+import com.google.gson.annotations.Expose;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -103,5 +104,19 @@ public class Topic {
 
     public void setReplies(Set<Reply> replies) {
         this.replies = replies;
+    }
+
+
+
+    @Override
+    public String toString() {
+        return "Topic{" +
+                "topic_id=" + topic_id +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", views=" + views +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
     }
 }
