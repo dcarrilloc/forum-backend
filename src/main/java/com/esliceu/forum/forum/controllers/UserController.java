@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+@CrossOrigin(origins="http://localhost:8081")
 @RestController
 public class UserController {
     Gson gson = new Gson();
@@ -23,6 +24,7 @@ public class UserController {
     @Autowired
     TokenService tokenService;
 
+    @CrossOrigin(origins = "http://localhost:8081/")
     @GetMapping("/getprofile")
     public ResponseEntity<String> getprofile(@RequestAttribute String email) {
         User user = userService.getUserByEmail(email);
