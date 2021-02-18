@@ -39,22 +39,10 @@ public class TokenService {
     }
 
     public Map<String, Claim> getClaims(String token) {
-        Map userDetails = new HashMap();
-        String subject = JWT.require(Algorithm.HMAC512(tokenSecret.getBytes()))
-                .build()
-                .verify(token)
-                .getSubject();
-
         Map<String, Claim> claims = JWT.require(Algorithm.HMAC512(tokenSecret.getBytes()))
                 .build()
                 .verify(token)
                 .getClaims();
-
-        /*
-        for (Map.Entry<String, Claim> entry : claims.entrySet()) {
-            System.out.println(entry.getKey() + ":" + entry.getValue().asString());
-        }
-         */
 
         return claims;
     }

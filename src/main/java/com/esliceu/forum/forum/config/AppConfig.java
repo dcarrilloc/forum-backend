@@ -11,14 +11,20 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class AppConfig implements WebMvcConfigurer {
 
+    /*
     @Bean
     public TokenInterceptor getTokenInterceptor() {
         return new TokenInterceptor();
     }
 
+     */
+
+    @Autowired
+    TokenInterceptor tokenInterceptor;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(getTokenInterceptor())
+        registry.addInterceptor(tokenInterceptor)
                 .addPathPatterns("/**")
                 .excludePathPatterns("/categories", "/login", "/register");
     }
@@ -27,7 +33,7 @@ public class AppConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowCredentials(true)
-                .allowedOrigins("http://localhost:8081")
+                .allowedOrigins("http://localhost:8080")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
     }
 }
