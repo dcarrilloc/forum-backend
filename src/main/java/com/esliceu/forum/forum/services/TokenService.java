@@ -2,14 +2,14 @@ package com.esliceu.forum.forum.services;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.Claim;
 import com.esliceu.forum.forum.entities.User;
 import com.esliceu.forum.forum.repos.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class TokenService {
@@ -38,11 +38,24 @@ public class TokenService {
         return "";
     }
 
-    public String getSubject(String token) {
+    public Map<String, Claim> getClaims(String token) {
+        Map userDetails = new HashMap();
         String subject = JWT.require(Algorithm.HMAC512(tokenSecret.getBytes()))
                 .build()
                 .verify(token)
                 .getSubject();
-        return subject;
+
+        Map<String, Claim> claims = JWT.require(Algorithm.HMAC512(tokenSecret.getBytes()))
+                .build()
+                .verify(token)
+                .getClaims();
+
+        /*
+        for (Map.Entry<String, Claim> entry : claims.entrySet()) {
+            System.out.println(entry.getKey() + ":" + entry.getValue().asString());
+        }
+         */
+
+        return claims;
     }
 }

@@ -9,4 +9,5 @@ public interface UserService {
     boolean checkRegisterCredentials(String email, String password, String moderateCategory, String name, String role);
     void register(String email, String password, String moderateCategory, String name, String role);
     void updateProfile(String email, String name);
+    void updatePassword(String email, String currentPassword, String newPassword);
 }

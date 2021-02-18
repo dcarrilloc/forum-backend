@@ -53,4 +53,25 @@ public class UserServiceImpl implements UserService {
         user.setRole(role);
         userRepo.save(user);
     }
+
+    @Override
+    public void updateProfile(String email, String name) {
+        Optional<User> optionalUser = userRepo.findByEmail(email);
+        if(optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setEmail(email);
+            user.setName(name);
+            userRepo.save(user);
+        }
+    }
+
+    @Override
+    public void updatePassword(String email, String currentPassword, String newPassword) {
+        Optional<User> optionalUser = userRepo.findByEmail(email);
+        if(optionalUser.isPresent() && optionalUser.get().getPassword().equals(currentPassword)) {
+            User user = optionalUser.get();
+            user.setPassword(newPassword);
+            userRepo.save(user);
+        }
+    }
 }

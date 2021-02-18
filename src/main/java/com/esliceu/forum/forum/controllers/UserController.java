@@ -1,5 +1,6 @@
 package com.esliceu.forum.forum.controllers;
 
+import com.auth0.jwt.interfaces.Claim;
 import com.esliceu.forum.forum.entities.User;
 import com.esliceu.forum.forum.services.TokenService;
 import com.esliceu.forum.forum.services.UserService;
@@ -13,7 +14,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-@CrossOrigin(origins="http://localhost:8081")
 @RestController
 public class UserController {
     Gson gson = new Gson();
@@ -24,9 +24,9 @@ public class UserController {
     @Autowired
     TokenService tokenService;
 
-    @CrossOrigin(origins = "http://localhost:8081/")
     @GetMapping("/getprofile")
-    public ResponseEntity<String> getprofile(@RequestAttribute String email) {
+    public ResponseEntity<String> getprofile(@RequestAttribute Map<String, Claim> userDetailsFromToken) {
+        String email = userDetailsFromToken.get("sub").asString();
         Map<String, Object> response = getUser(email);
         return new ResponseEntity<>(gson.toJson(response), HttpStatus.OK);
     }
@@ -42,7 +42,6 @@ public class UserController {
             errorResponse.put("message", "Incorrect email or password.");
             return new ResponseEntity<>(gson.toJson(errorResponse), HttpStatus.BAD_REQUEST);
         }
-
         return getStringResponseEntity(email);
     }
 
@@ -77,6 +76,17 @@ public class UserController {
         String name = map.get("name");
 
         userService.updateProfile(email, name);
+        return getStringResponseEntity(email);
+    }
+
+    @PutMapping("/profile/password")
+    public ResponseEntity<String> password(@RequestBody String payload, @RequestAttribute Map<String, Claim> userDetailsFromToken) {
+        String email = userDetailsFromToken.get("sub").asString();
+        Map<String, String> map = gson.fromJson(payload, HashMap.class);
+        String currentPassword = map.get("currentPassword");
+        String newPassword = map.get("newPassword");
+
+        userService.updatePassword(email, currentPassword, newPassword);
         return getStringResponseEntity(email);
     }
 
