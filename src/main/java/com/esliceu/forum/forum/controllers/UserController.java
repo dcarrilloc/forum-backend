@@ -27,17 +27,7 @@ public class UserController {
     @CrossOrigin(origins = "http://localhost:8081/")
     @GetMapping("/getprofile")
     public ResponseEntity<String> getprofile(@RequestAttribute String email) {
-        User user = userService.getUserByEmail(email);
-        Map<String, Object> response = new HashMap<>();
-        response.put("avatarUrl", user.getAvatar());
-        response.put("email", user.getEmail());
-        response.put("id", String.valueOf(user.getUser_id()));
-        response.put("name", user.getName());
-        response.put("permissions", new ArrayList<>());
-        response.put("role", user.getRole());
-        response.put("__v", 0);
-        response.put("_id", String.valueOf(user.getUser_id()));
-
+        Map<String, Object> response = getUser(email);
         return new ResponseEntity<>(gson.toJson(response), HttpStatus.OK);
     }
 
@@ -53,22 +43,7 @@ public class UserController {
             return new ResponseEntity<>(gson.toJson(errorResponse), HttpStatus.BAD_REQUEST);
         }
 
-        User user = userService.getUserByEmail(email);
-        Map<String, Object> userMap = new HashMap<>();
-        userMap.put("avatarUrl", user.getAvatar());
-        userMap.put("email", user.getEmail());
-        userMap.put("id", String.valueOf(user.getUser_id()));
-        userMap.put("name", user.getName());
-        userMap.put("permissions", new ArrayList<>());
-        userMap.put("role", user.getRole());
-        userMap.put("__v", 0);
-        userMap.put("_id", String.valueOf(user.getUser_id()));
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("token", tokenService.generateToken(email));
-        response.put("user", userMap);
-
-        return new ResponseEntity<>(gson.toJson(response), HttpStatus.OK);
+        return getStringResponseEntity(email);
     }
 
     @PostMapping("/register")
@@ -93,5 +68,39 @@ public class UserController {
         Map<String, String> response = new HashMap<>();
         response.put("message", "done");
         return new ResponseEntity<>(gson.toJson(response), HttpStatus.OK);
+    }
+
+    @PutMapping("/profile")
+    public ResponseEntity<String> profile(@RequestBody String payload) {
+        Map<String, String> map = gson.fromJson(payload, HashMap.class);
+        String email = map.get("email");
+        String name = map.get("name");
+
+        userService.updateProfile(email, name);
+        return getStringResponseEntity(email);
+    }
+
+    private ResponseEntity<String> getStringResponseEntity(String email) {
+        Map<String, Object> userMap = getUser(email);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("token", tokenService.generateToken(email));
+        response.put("user", userMap);
+
+        return new ResponseEntity<>(gson.toJson(response), HttpStatus.OK);
+    }
+
+    private Map<String, Object> getUser(String email) {
+        User user = userService.getUserByEmail(email);
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("avatarUrl", user.getAvatar());
+        userMap.put("email", user.getEmail());
+        userMap.put("id", String.valueOf(user.getUser_id()));
+        userMap.put("name", user.getName());
+        userMap.put("permissions", new ArrayList<>());
+        userMap.put("role", user.getRole());
+        userMap.put("__v", 0);
+        userMap.put("_id", String.valueOf(user.getUser_id()));
+        return userMap;
     }
 }

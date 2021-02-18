@@ -8,4 +8,5 @@ public interface UserService {
     boolean checkCredentials(String email, String password);
     boolean checkRegisterCredentials(String email, String password, String moderateCategory, String name, String role);
     void register(String email, String password, String moderateCategory, String name, String role);
+    void updateProfile(String email, String name);
 }
