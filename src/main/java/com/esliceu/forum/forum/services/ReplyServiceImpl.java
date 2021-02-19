@@ -39,4 +39,28 @@ public class ReplyServiceImpl implements ReplyService {
         }
         return null;
     }
+
+    @Override
+    public Reply updateReply(String content, Long reply_id) {
+        Optional<Reply> optionalReply = replyRepo.findById(reply_id);
+        if(optionalReply.isPresent()) {
+            Reply reply = optionalReply.get();
+            reply.setContent(content);
+            reply.setUpdatedAt(LocalDateTime.now());
+            return replyRepo.save(reply);
+        }
+        return null;
+    }
+
+    @Override
+    public void deleteReply(Long topic_id, Long reply_id) throws Exception {
+        Optional<Reply> optionalReply = replyRepo.findById(reply_id);
+        Optional<Topic> optionalTopic = topicRepo.findById(topic_id);
+        if(optionalReply.isPresent() && optionalTopic.isPresent()) {
+            Reply reply = optionalReply.get();
+            replyRepo.delete(reply);
+        } else {
+            throw new Exception();
+        }
+    }
 }

@@ -33,4 +33,23 @@ public class ReplyController {
         Reply reply = replyService.reply(content, topic_id, userid);
         return new ResponseEntity<>(gson.toJson(reply), HttpStatus.OK);
     }
+
+    @PutMapping("/topics/{topic_id}/replies/{reply_id}")
+    public ResponseEntity<String> updateReply(@PathVariable Long topic_id, @PathVariable Long reply_id, @RequestBody String payload) {
+        Map<String, String> data = gson.fromJson(payload, HashMap.class);
+        String content = data.get("content");
+
+        Reply reply = replyService.updateReply(content, reply_id);
+        return new ResponseEntity<>(gson.toJson(reply), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/topics/{topic_id}/replies/{reply_id}")
+    public ResponseEntity<String> deleteReply(@PathVariable Long topic_id, @PathVariable Long reply_id) {
+        try {
+            replyService.deleteReply(topic_id, reply_id);
+            return new ResponseEntity<>(gson.toJson(true), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(gson.toJson(false), HttpStatus.METHOD_NOT_ALLOWED);
+        }
+    }
 }

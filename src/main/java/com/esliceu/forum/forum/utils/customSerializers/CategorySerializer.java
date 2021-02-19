@@ -22,9 +22,11 @@ public class CategorySerializer implements JsonSerializer<Category> {
         jsonCategory.addProperty("description", category.getDescription());
         List<String> moderatorsIds = new ArrayList<>();
         Set<User> moderators = category.getModerators();
-        moderators.forEach(mod -> {
-            moderatorsIds.add(String.valueOf(mod.getUser_id()));
-        });
+        if(moderators != null) {
+            moderators.forEach(mod -> {
+                moderatorsIds.add(String.valueOf(mod.getUser_id()));
+            });
+        }
         jsonCategory.add("moderators", gson.toJsonTree(moderatorsIds));
         jsonCategory.addProperty("slug", category.getSlug());
         jsonCategory.addProperty("title", category.getTitle());

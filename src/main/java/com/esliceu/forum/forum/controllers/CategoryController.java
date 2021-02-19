@@ -9,11 +9,11 @@ import com.google.gson.GsonBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class CategoryController {
@@ -34,9 +34,38 @@ public class CategoryController {
         return new ResponseEntity<>(gson.toJson(categories), HttpStatus.OK);
     }
 
+    @PostMapping("/categories")
+    public ResponseEntity<String> postCategory(@RequestBody String payload) {
+        Map<String, String> data = gson.fromJson(payload, HashMap.class);
+        String title = data.get("title");
+        String description = data.get("description");
+        Category category = categoryService.addCategory(title, description);
+        return new ResponseEntity<>(gson.toJson(category), HttpStatus.OK);
+    }
+
     @GetMapping("/categories/{slug}")
     public ResponseEntity<String> category(@PathVariable String slug) {
         Category category = categoryService.getCategoryBySlug(slug);
         return new ResponseEntity<>(gson.toJson(category), HttpStatus.OK);
+    }
+
+    @PutMapping("/categories/{slug}")
+    public ResponseEntity<String> updateCategory(@PathVariable String slug, @RequestBody String payload) {
+        Map<String, String> data = gson.fromJson(payload, HashMap.class);
+        String title = data.get("title");
+        String description = data.get("description");
+
+        Category category = categoryService.updateCategory(slug, title, description);
+        return new ResponseEntity<>(gson.toJson(category), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/categories/{slug}")
+    public ResponseEntity<String> deleteCategory(@PathVariable String slug) {
+        try {
+            categoryService.deleteCategory(slug);
+            return new ResponseEntity<>(gson.toJson(true), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(gson.toJson(false), HttpStatus.METHOD_NOT_ALLOWED);
+        }
     }
 }
