@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class TokenService {
@@ -22,16 +24,13 @@ public class TokenService {
     @Autowired
     UserRepo userRepo;
 
-    public String generateToken(String email) {
-        Optional<User> optionalUser = userRepo.findByEmail(email);
-        if(optionalUser.isPresent()) {
+    public String generateToken(Long userid) {
+        Optional<User> optionalUser = userRepo.findById(userid);
+        if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             return JWT.create()
-                    .withSubject(user.getEmail())
-                    .withClaim("id", user.getUser_id())
-                    .withClaim("name", user.getName())
+                    .withSubject(String.valueOf(user.getUser_id()))
                     .withClaim("role", user.getRole())
-                    .withClaim("avatar", user.getAvatar())
                     .withExpiresAt(new Date(System.currentTimeMillis() + tokenExpirationTime))
                     .sign(Algorithm.HMAC512(tokenSecret.getBytes()));
         }

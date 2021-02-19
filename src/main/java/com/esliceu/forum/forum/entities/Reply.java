@@ -8,22 +8,26 @@ import java.time.LocalDateTime;
 
 @Entity
 public class Reply {
+    @Expose
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long reply_id;
 
-    @Type(type="text")
+    @Expose
+    @Type(type = "text")
     private String content;
+    @Expose
     private LocalDateTime createdAt;
+    @Expose
     private LocalDateTime updatedAt;
 
     // Relació 1-N amb Topic
-    @Expose(serialize = false, deserialize = false)
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "topic_id")
-    private  Topic topic;
+    private Topic topic;
 
     // Relació 1-N amb User
+    @Expose
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
@@ -75,7 +79,6 @@ public class Reply {
     public void setUser(User user) {
         this.user = user;
     }
-
 
 
     @Override

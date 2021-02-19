@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
-public class ReplyServiceImpl implements ReplyService{
+public class ReplyServiceImpl implements ReplyService {
     @Autowired
     ReplyRepo replyRepo;
 
@@ -24,10 +24,10 @@ public class ReplyServiceImpl implements ReplyService{
     UserRepo userRepo;
 
     @Override
-    public Reply reply(String content, Long topic_id, String email) {
+    public Reply reply(String content, Long topic_id, Long userid) {
         Optional<Topic> optionalTopic = topicRepo.findById(topic_id);
-        Optional<User> optionalUser = userRepo.findByEmail(email);
-        if(optionalTopic.isPresent() && optionalUser.isPresent()) {
+        Optional<User> optionalUser = userRepo.findById(userid);
+        if (optionalTopic.isPresent() && optionalUser.isPresent()) {
             Reply reply = new Reply();
             reply.setContent(content);
             reply.setCreatedAt(LocalDateTime.now());
@@ -37,7 +37,6 @@ public class ReplyServiceImpl implements ReplyService{
 
             return replyRepo.save(reply);
         }
-
         return null;
     }
 }

@@ -2,7 +2,6 @@ package com.esliceu.forum.forum.config;
 
 import com.esliceu.forum.forum.interceptors.TokenInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -25,7 +24,7 @@ public class AppConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(tokenInterceptor)
-                .addPathPatterns("/**")
+                .addPathPatterns("/getprofile", "/profile/password", "/profile", "/topics/*/replies")
                 .excludePathPatterns("/categories", "/login", "/register");
     }
 

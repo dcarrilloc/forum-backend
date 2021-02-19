@@ -4,19 +4,23 @@ import com.auth0.jwt.interfaces.Claim;
 import com.esliceu.forum.forum.entities.User;
 import com.esliceu.forum.forum.services.TokenService;
 import com.esliceu.forum.forum.services.UserService;
+import com.esliceu.forum.forum.utils.customSerializers.UserSerializer;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
 public class UserController {
-    Gson gson = new Gson();
+    Gson gson = new GsonBuilder()
+            .excludeFieldsWithoutExposeAnnotation()
+            .registerTypeAdapter(User.class, new UserSerializer())
+            .create();
 
     @Autowired
     UserService userService;
@@ -26,9 +30,8 @@ public class UserController {
 
     @GetMapping("/getprofile")
     public ResponseEntity<String> getprofile(@RequestAttribute Map<String, Claim> userDetailsFromToken) {
-        String email = userDetailsFromToken.get("sub").asString();
-        Map<String, Object> response = getUser(email);
-        return new ResponseEntity<>(gson.toJson(response), HttpStatus.OK);
+        User user = userService.getUserById(Long.parseLong(userDetailsFromToken.get("sub").asString()));
+        return new ResponseEntity<>(gson.toJson(user), HttpStatus.OK);
     }
 
     @PostMapping("/login")
@@ -37,12 +40,12 @@ public class UserController {
         String email = map.get("email");
         String password = map.get("password");
 
-        if(!userService.checkCredentials(email, password)) {
+        if (!userService.checkCredentials(email, password)) {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("message", "Incorrect email or password.");
             return new ResponseEntity<>(gson.toJson(errorResponse), HttpStatus.BAD_REQUEST);
         }
-        return getStringResponseEntity(email);
+        return getStringResponseEntity(userService.getUserByEmail(email).getUser_id());
     }
 
     @PostMapping("/register")
@@ -54,7 +57,7 @@ public class UserController {
         String name = map.get("name");
         String role = map.get("role");
 
-        if(!userService.checkRegisterCredentials(email, password, moderateCategory, name, role)) {
+        if (!userService.checkRegisterCredentials(email, password, moderateCategory, name, role)) {
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Bad Request");
             error.put("message", "This user already exists");
@@ -70,47 +73,39 @@ public class UserController {
     }
 
     @PutMapping("/profile")
-    public ResponseEntity<String> profile(@RequestBody String payload) {
+    public ResponseEntity<String> profile(@RequestBody String payload, @RequestAttribute Map<String, Claim> userDetailsFromToken) {
+        Long userid = Long.parseLong(userDetailsFromToken.get("sub").asString());
         Map<String, String> map = gson.fromJson(payload, HashMap.class);
         String email = map.get("email");
         String name = map.get("name");
-
-        userService.updateProfile(email, name);
-        return getStringResponseEntity(email);
+        userService.updateProfile(userid, email, name);
+        return getStringResponseEntity(userService.getUserByEmail(email).getUser_id());
     }
 
     @PutMapping("/profile/password")
     public ResponseEntity<String> password(@RequestBody String payload, @RequestAttribute Map<String, Claim> userDetailsFromToken) {
-        String email = userDetailsFromToken.get("sub").asString();
+        Long userid = Long.parseLong(userDetailsFromToken.get("sub").asString());
         Map<String, String> map = gson.fromJson(payload, HashMap.class);
         String currentPassword = map.get("currentPassword");
         String newPassword = map.get("newPassword");
 
-        userService.updatePassword(email, currentPassword, newPassword);
-        return getStringResponseEntity(email);
+        try {
+            userService.updatePassword(userid, currentPassword, newPassword);
+        } catch (Exception e) {
+            Map<String, String> badResponse = new HashMap<>();
+            badResponse.put("message", "Your current password is wrong!");
+            return new ResponseEntity<>(gson.toJson(badResponse), HttpStatus.UNAUTHORIZED);
+        }
+        return getStringResponseEntity(userid);
     }
 
-    private ResponseEntity<String> getStringResponseEntity(String email) {
-        Map<String, Object> userMap = getUser(email);
+    private ResponseEntity<String> getStringResponseEntity(Long userid) {
+        User user = userService.getUserById(userid);
 
         Map<String, Object> response = new HashMap<>();
-        response.put("token", tokenService.generateToken(email));
-        response.put("user", userMap);
+        response.put("token", tokenService.generateToken(userid));
+        response.put("user", user);
 
         return new ResponseEntity<>(gson.toJson(response), HttpStatus.OK);
-    }
-
-    private Map<String, Object> getUser(String email) {
-        User user = userService.getUserByEmail(email);
-        Map<String, Object> userMap = new HashMap<>();
-        userMap.put("avatarUrl", user.getAvatar());
-        userMap.put("email", user.getEmail());
-        userMap.put("id", String.valueOf(user.getUser_id()));
-        userMap.put("name", user.getName());
-        userMap.put("permissions", new ArrayList<>());
-        userMap.put("role", user.getRole());
-        userMap.put("__v", 0);
-        userMap.put("_id", String.valueOf(user.getUser_id()));
-        return userMap;
     }
 }

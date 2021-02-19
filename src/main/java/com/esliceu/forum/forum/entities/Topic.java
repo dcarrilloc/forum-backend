@@ -1,6 +1,5 @@
 package com.esliceu.forum.forum.entities;
 
-import com.google.gson.annotations.Expose;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -14,7 +13,7 @@ public class Topic {
     private long topic_id;
 
     private String title;
-    @Type(type="text")
+    @Type(type = "text")
     private String content;
     private Long views;
     private LocalDateTime createdAt;
@@ -105,7 +104,6 @@ public class Topic {
     public void setReplies(Set<Reply> replies) {
         this.replies = replies;
     }
-
 
 
     @Override

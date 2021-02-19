@@ -4,10 +4,16 @@ import com.esliceu.forum.forum.entities.User;
 
 public interface UserService {
     User getUserById(Long id);
+
     User getUserByEmail(String email);
+
     boolean checkCredentials(String email, String password);
+
     boolean checkRegisterCredentials(String email, String password, String moderateCategory, String name, String role);
+
     void register(String email, String password, String moderateCategory, String name, String role);
-    void updateProfile(String email, String name);
-    void updatePassword(String email, String currentPassword, String newPassword);
+
+    void updateProfile(Long userid, String email, String name);
+
+    void updatePassword(Long userid, String currentPassword, String newPassword) throws Exception;
 }

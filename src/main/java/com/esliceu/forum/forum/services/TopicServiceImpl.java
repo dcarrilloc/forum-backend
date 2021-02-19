@@ -1,6 +1,7 @@
 package com.esliceu.forum.forum.services;
 
 import com.esliceu.forum.forum.entities.Category;
+import com.esliceu.forum.forum.entities.Reply;
 import com.esliceu.forum.forum.entities.Topic;
 import com.esliceu.forum.forum.repos.CategoryRepo;
 import com.esliceu.forum.forum.repos.TopicRepo;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class TopicServiceImpl implements TopicService{
+public class TopicServiceImpl implements TopicService {
 
     @Autowired
     CategoryRepo categoryRepo;
@@ -23,7 +24,7 @@ public class TopicServiceImpl implements TopicService{
     @Override
     public List<Topic> getTopicFromCategory(String slug) {
         Optional<Category> optionalCategory = categoryRepo.findBySlug(slug);
-        if(optionalCategory.isPresent()) {
+        if (optionalCategory.isPresent()) {
             Category category = optionalCategory.get();
             return new ArrayList<>(category.getTopics());
         }
@@ -33,7 +34,7 @@ public class TopicServiceImpl implements TopicService{
     @Override
     public Topic getTopicById(Long id) {
         Optional<Topic> optionalTopic = topicRepo.findById(id);
-        if(optionalTopic.isPresent()) {
+        if (optionalTopic.isPresent()) {
             return optionalTopic.get();
         }
         return null;
@@ -42,10 +43,16 @@ public class TopicServiceImpl implements TopicService{
     @Override
     public void addView(Long id) {
         Optional<Topic> optionalTopic = topicRepo.findById(id);
-        if(optionalTopic.isPresent()) {
+        if (optionalTopic.isPresent()) {
             Topic topic = optionalTopic.get();
             topic.setViews(topic.getViews() + 1);
             topicRepo.save(topic);
         }
+    }
+
+    @Override
+    public List<Reply> getTopicReplies(long id) {
+        Optional<Topic> optionalTopic = topicRepo.findById(id);
+        return optionalTopic.map(topic -> new ArrayList<>(topic.getReplies())).orElseGet(ArrayList::new);
     }
 }

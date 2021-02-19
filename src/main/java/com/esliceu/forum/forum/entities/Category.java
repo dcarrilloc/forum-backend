@@ -14,7 +14,7 @@ public class Category {
 
     private String slug;
     private String title;
-    @Type(type="text")
+    @Type(type = "text")
     private String description;
     private String color;
 
@@ -24,11 +24,11 @@ public class Category {
     private Set<Topic> topics;
 
     // Relació N-M amb User
-    @ManyToMany(cascade = { CascadeType.ALL })
+    @ManyToMany(cascade = {CascadeType.ALL})
     @JoinTable(
             name = "Moderator",
-            joinColumns = { @JoinColumn(name = "category_id") },
-            inverseJoinColumns = { @JoinColumn(name = "user_id") }
+            joinColumns = {@JoinColumn(name = "category_id")},
+            inverseJoinColumns = {@JoinColumn(name = "user_id")}
     )
     private Set<User> moderators;
 
@@ -87,7 +87,6 @@ public class Category {
     public void setModerators(Set<User> moderators) {
         this.moderators = moderators;
     }
-
 
 
     @Override

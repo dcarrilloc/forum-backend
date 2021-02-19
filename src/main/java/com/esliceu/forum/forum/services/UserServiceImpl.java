@@ -16,16 +16,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserById(Long id) {
         Optional<User> optionalUser = userRepo.findById(id);
-        if(optionalUser.isPresent()) {
+        if (optionalUser.isPresent()) {
             return optionalUser.get();
         }
         return null;
     }
 
     @Override
-    public User getUserByEmail(String email){
+    public User getUserByEmail(String email) {
         Optional<User> optionalUser = userRepo.findByEmail(email);
-        if(optionalUser.isPresent()) {
+        if (optionalUser.isPresent()) {
             return optionalUser.get();
         }
         return null;
@@ -55,9 +55,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateProfile(String email, String name) {
-        Optional<User> optionalUser = userRepo.findByEmail(email);
-        if(optionalUser.isPresent()) {
+    public void updateProfile(Long userid, String email, String name) {
+        Optional<User> optionalUser = userRepo.findById(userid);
+        if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             user.setEmail(email);
             user.setName(name);
@@ -66,12 +66,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updatePassword(String email, String currentPassword, String newPassword) {
-        Optional<User> optionalUser = userRepo.findByEmail(email);
-        if(optionalUser.isPresent() && optionalUser.get().getPassword().equals(currentPassword)) {
+    public void updatePassword(Long userid, String currentPassword, String newPassword) throws Exception {
+        Optional<User> optionalUser = userRepo.findById(userid);
+        if (optionalUser.isPresent() && optionalUser.get().getPassword().equals(currentPassword)) {
             User user = optionalUser.get();
             user.setPassword(newPassword);
             userRepo.save(user);
+        } else {
+            throw new Exception();
         }
     }
 }

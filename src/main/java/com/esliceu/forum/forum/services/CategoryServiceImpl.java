@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class CategoryServiceImpl implements CategoryService{
+public class CategoryServiceImpl implements CategoryService {
 
     @Autowired
     CategoryRepo categoryRepo;
@@ -22,7 +22,7 @@ public class CategoryServiceImpl implements CategoryService{
     @Override
     public Category getCategoryBySlug(String slug) {
         Optional<Category> optionalCategory = categoryRepo.findBySlug(slug);
-        if(optionalCategory.isPresent()) {
+        if (optionalCategory.isPresent()) {
             return optionalCategory.get();
         }
         return null;
