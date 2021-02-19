@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 @RestController
@@ -53,11 +54,11 @@ public class UserController {
         Map<String, String> map = gson.fromJson(payload, HashMap.class);
         String email = map.get("email");
         String password = map.get("password");
-        String moderateCategory = map.get("moderateCategory");
         String name = map.get("name");
         String role = map.get("role");
+        System.out.println(role);
 
-        if (!userService.checkRegisterCredentials(email, password, moderateCategory, name, role)) {
+        if (!userService.checkRegisterCredentials(email)) {
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Bad Request");
             error.put("message", "This user already exists");
@@ -65,7 +66,11 @@ public class UserController {
             return new ResponseEntity<>(gson.toJson(error), HttpStatus.BAD_REQUEST);
         }
 
-        userService.register(email, password, moderateCategory, name, role);
+        User user = userService.register(email, password, name, role);
+
+        if(map.get("moderateCategory") != null && !map.get("moderateCategory").equals("")) {
+            userService.addModerator(user, map.get("moderateCategory"));
+        }
 
         Map<String, String> response = new HashMap<>();
         response.put("message", "done");
