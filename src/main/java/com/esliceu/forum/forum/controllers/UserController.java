@@ -83,7 +83,11 @@ public class UserController {
         Map<String, String> map = gson.fromJson(payload, HashMap.class);
         String email = map.get("email");
         String name = map.get("name");
+        String avatar = map.get("avatar");
         userService.updateProfile(userid, email, name);
+        if(avatar != null && !avatar.equals("")) {
+            userService.updateProfileImage(avatar, userid);
+        }
         return getStringResponseEntity(userService.getUserByEmail(email).getUser_id());
     }
 

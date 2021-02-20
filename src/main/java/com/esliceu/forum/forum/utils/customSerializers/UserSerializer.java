@@ -17,7 +17,7 @@ public class UserSerializer implements JsonSerializer<User> {
     @Override
     public JsonElement serialize(User user, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject jsonUser = new JsonObject();
-        jsonUser.addProperty("avatarUrl", user.getAvatar());
+        //jsonUser.addProperty("avatarUrl", user.getAvatar());
         jsonUser.addProperty("email", user.getEmail());
         jsonUser.addProperty("name", user.getName());
         jsonUser.addProperty("role", user.getRole());

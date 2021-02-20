@@ -7,7 +7,8 @@ import com.esliceu.forum.forum.repos.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
@@ -19,6 +20,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     CategoryRepo categoryRepo;
+
+    @Autowired
+    FileLocationService fileLocationService;
 
     @Override
     public User getUserById(Long id) {
@@ -53,7 +57,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User register(String email, String password, String name, String role) {
         User user = new User();
-        user.setAvatar("");
+        //user.setAvatar("");
         user.setEmail(email);
         user.setName(name);
         user.setPassword(password);
@@ -93,6 +97,19 @@ public class UserServiceImpl implements UserService {
             moderators.add(user);
             category.setModerators(moderators);
             categoryRepo.save(category);
+        }
+    }
+
+    @Override
+    public void updateProfileImage(String avatar, Long userid) {
+        try {
+            User user = userRepo.findById(userid).get();
+
+            String imageName = user.getName().replaceAll("\\s", "-").toLowerCase(Locale.ROOT)
+                    + "-" + user.getUser_id();
+            fileLocationService.save(avatar.getBytes(StandardCharsets.UTF_8), imageName, user);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

@@ -10,14 +10,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class AppConfig implements WebMvcConfigurer {
 
-    /*
-    @Bean
-    public TokenInterceptor getTokenInterceptor() {
-        return new TokenInterceptor();
-    }
-
-     */
-
     @Autowired
     TokenInterceptor tokenInterceptor;
 

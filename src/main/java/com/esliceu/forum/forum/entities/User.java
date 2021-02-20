@@ -20,7 +20,9 @@ public class User {
     @Expose
     private String name;
     @Expose
-    private String avatar;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "userimg_id", referencedColumnName = "id")
+    private UserImg avatar;
     @Expose
     private String role;
 
@@ -71,11 +73,11 @@ public class User {
         this.name = name;
     }
 
-    public String getAvatar() {
+    public UserImg getAvatar() {
         return avatar;
     }
 
-    public void setAvatar(String avatar) {
+    public void setAvatar(UserImg avatar) {
         this.avatar = avatar;
     }
 
