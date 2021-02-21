@@ -1,6 +1,7 @@
 package com.esliceu.forum.forum.entities;
 
 import com.google.gson.annotations.Expose;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -20,9 +21,8 @@ public class User {
     @Expose
     private String name;
     @Expose
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "userimg_id", referencedColumnName = "id")
-    private UserImg avatar;
+    @Type(type="text")
+    private String avatar;
     @Expose
     private String role;
 
@@ -73,14 +73,6 @@ public class User {
         this.name = name;
     }
 
-    public UserImg getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(UserImg avatar) {
-        this.avatar = avatar;
-    }
-
     public String getRole() {
         return role;
     }
@@ -113,6 +105,13 @@ public class User {
         this.categories_moderator = categories_moderator;
     }
 
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
 
     @Override
     public String toString() {
@@ -121,7 +120,6 @@ public class User {
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", name='" + name + '\'' +
-                ", avatar='" + avatar + '\'' +
                 ", role='" + role + '\'' +
                 '}';
     }

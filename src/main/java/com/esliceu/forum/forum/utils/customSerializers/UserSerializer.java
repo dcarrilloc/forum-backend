@@ -2,8 +2,10 @@ package com.esliceu.forum.forum.utils.customSerializers;
 
 import com.esliceu.forum.forum.entities.User;
 import com.google.gson.*;
+import org.springframework.core.io.FileSystemResource;
 
 import java.lang.reflect.Type;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +19,7 @@ public class UserSerializer implements JsonSerializer<User> {
     @Override
     public JsonElement serialize(User user, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject jsonUser = new JsonObject();
-        //jsonUser.addProperty("avatarUrl", user.getAvatar());
+        jsonUser.addProperty("avatarUrl", user.getAvatar());
         jsonUser.addProperty("email", user.getEmail());
         jsonUser.addProperty("name", user.getName());
         jsonUser.addProperty("role", user.getRole());
@@ -39,12 +41,12 @@ public class UserSerializer implements JsonSerializer<User> {
         Map<String, Object> categories = new HashMap<>();
         if(user.getCategories_moderator().size() > 0) {
             user.getCategories_moderator().forEach(cm -> {
-                List<String> category_slut = new ArrayList<>();
-                category_slut.add("categories_topics:write");
-                category_slut.add("categories_topics:delete");
-                category_slut.add("categories_replies:write");
-                category_slut.add("categories_replies:delete");
-                categories.put(cm.getSlug(), category_slut);
+                List<String> category_slug = new ArrayList<>();
+                category_slug.add("categories_topics:write");
+                category_slug.add("categories_topics:delete");
+                category_slug.add("categories_replies:write");
+                category_slug.add("categories_replies:delete");
+                categories.put(cm.getSlug(), category_slug);
             });
         }
         permissions.put("categories", categories);

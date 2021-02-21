@@ -29,7 +29,7 @@ public class Topic {
     @JoinColumn(name = "user_id")
     private User user;
 
-    // Relació 1-N amb Topic
+    // Relació 1-N amb Reply
     @OneToMany(mappedBy = "topic", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private Set<Reply> replies;
 
