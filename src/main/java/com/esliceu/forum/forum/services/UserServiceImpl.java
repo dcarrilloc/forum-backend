@@ -7,6 +7,8 @@ import com.esliceu.forum.forum.repos.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.Set;
 
@@ -56,7 +58,7 @@ public class UserServiceImpl implements UserService {
         user.setName(name);
         user.setPassword(password);
         user.setRole(role);
-        user.setAvatar("");
+        user.setAvatar(new byte[0]);
         return userRepo.save(user);
     }
 
@@ -97,12 +99,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateProfileImage(String avatar, Long userid) {
+        Charset charset = StandardCharsets.US_ASCII;
         try {
-            User user = userRepo.findById(userid).get();
-            user.setAvatar(avatar);
-            userRepo.save(user);
+            Optional<User> optionalUser = userRepo.findById(userid);
+            if(optionalUser.isPresent()) {
+                User user = optionalUser.get();
+                byte[] img = charset.encode(avatar).array();
+                user.setAvatar(img);
+                userRepo.save(user);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public byte[] getUserImage(Long userid) {
+        Optional<User> optionalUser = userRepo.findById(userid);
+        return optionalUser.map(User::getAvatar).orElse(null);
     }
 }

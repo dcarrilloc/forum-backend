@@ -21,8 +21,8 @@ public class User {
     @Expose
     private String name;
     @Expose
-    @Type(type="text")
-    private String avatar;
+    @Lob
+    private byte[] avatar;
     @Expose
     private String role;
 
@@ -105,11 +105,11 @@ public class User {
         this.categories_moderator = categories_moderator;
     }
 
-    public String getAvatar() {
+    public byte[] getAvatar() {
         return avatar;
     }
 
-    public void setAvatar(String avatar) {
+    public void setAvatar(byte[] avatar) {
         this.avatar = avatar;
     }
 

@@ -12,4 +12,5 @@ public interface UserService {
     void updatePassword(Long userid, String currentPassword, String newPassword) throws Exception;
     void addModerator(User user, String moderateCategory);
     void updateProfileImage(String avatar, Long userid);
+    byte[] getUserImage(Long userid);
 }
