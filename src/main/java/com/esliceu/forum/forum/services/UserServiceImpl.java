@@ -82,9 +82,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updatePassword(Long userid, String currentPassword, String newPassword) throws Exception {
         Optional<User> optionalUser = userRepo.findById(userid);
-        if (optionalUser.isPresent() && optionalUser.get().getPassword().equals(currentPassword)) {
+        if (optionalUser.isPresent() && validatePassword(currentPassword, optionalUser.get().getPassword())) {
             User user = optionalUser.get();
-            user.setPassword(newPassword);
+            user.setPassword(encryptPassword(newPassword));
             userRepo.save(user);
         } else {
             throw new Exception();

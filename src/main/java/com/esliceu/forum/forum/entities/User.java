@@ -30,7 +30,7 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private Set<Topic> topics;
 
-    // Relació 1-N amb Topic
+    // Relació 1-N amb Replies
     @Expose(serialize = false, deserialize = false)
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private Set<Reply> replies;
