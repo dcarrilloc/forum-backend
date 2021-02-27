@@ -1,7 +1,6 @@
 package com.esliceu.forum.forum.entities;
 
 import com.google.gson.annotations.Expose;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.Set;

@@ -1,15 +1,12 @@
 package com.esliceu.forum.forum.utils.customSerializers;
 
-import com.esliceu.forum.forum.entities.Category;
 import com.esliceu.forum.forum.entities.Topic;
-import com.esliceu.forum.forum.entities.User;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 
 public class AddTopicSerializer implements JsonSerializer<Topic> {
     @Override

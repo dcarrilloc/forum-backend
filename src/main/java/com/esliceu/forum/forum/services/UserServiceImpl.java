@@ -7,8 +7,14 @@ import com.esliceu.forum.forum.repos.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Optional;
 import java.util.Set;
 
@@ -40,9 +46,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean checkCredentials(String email, String password) {
+    public boolean checkCredentials(String email, String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
         Optional<User> optionalUser = userRepo.findByEmail(email);
-        return optionalUser.isPresent() && optionalUser.get().getPassword().equals(password);
+        return optionalUser.isPresent() && validatePassword(password, optionalUser.get().getPassword());
     }
 
     @Override
@@ -52,11 +58,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User register(String email, String password, String name, String role) {
+    public User register(String email, String password, String name, String role) throws NoSuchAlgorithmException {
         User user = new User();
         user.setEmail(email);
         user.setName(name);
-        user.setPassword(password);
+        user.setPassword(encryptPassword(password));
         user.setRole(role);
         user.setAvatar(new byte[0]);
         return userRepo.save(user);
@@ -117,5 +123,69 @@ public class UserServiceImpl implements UserService {
     public byte[] getUserImage(Long userid) {
         Optional<User> optionalUser = userRepo.findById(userid);
         return optionalUser.map(User::getAvatar).orElse(null);
+    }
+
+    private String encryptPassword(String pass) throws NoSuchAlgorithmException {
+        byte[] salt = getSalt();
+        int iterations = 100000;
+        int keyLength = 64 * 8;
+        char[] passwordChars = pass.toCharArray();
+
+        return hashPassword(passwordChars, salt, iterations, keyLength);
+    }
+
+    private static boolean validatePassword(String originalPassword, String storedPassword) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        String[] parts = storedPassword.split(":");
+        int iterations = 100000;
+        byte[] salt = fromHex(parts[0]);
+        byte[] hash = fromHex(parts[1]);
+
+        PBEKeySpec spec = new PBEKeySpec(originalPassword.toCharArray(), salt, iterations, hash.length * 8);
+        SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512");
+        byte[] testHash = skf.generateSecret(spec).getEncoded();
+
+        int diff = hash.length ^ testHash.length;
+        for(int i = 0; i < hash.length && i < testHash.length; i++) {
+            diff |= hash[i] ^ testHash[i];
+        }
+        return diff == 0;
+    }
+
+    private static String hashPassword(final char[] password, final byte[] salt, final int iterations, final int keyLength ) {
+        try {
+            SecretKeyFactory skf = SecretKeyFactory.getInstance( "PBKDF2WithHmacSHA512" );
+            PBEKeySpec spec = new PBEKeySpec( password, salt, iterations, keyLength );
+            byte[] hash = skf.generateSecret(spec).getEncoded();
+            return toHex(salt) + ":" + toHex(hash);
+        } catch ( NoSuchAlgorithmException | InvalidKeySpecException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
+    private static byte[] getSalt() throws NoSuchAlgorithmException {
+        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+        byte[] salt = new byte[16];
+        sr.nextBytes(salt);
+        return salt;
+    }
+
+    private static String toHex(byte[] array) {
+        BigInteger bi = new BigInteger(1, array);
+        String hex = bi.toString(16);
+        int paddingLength = (array.length * 2) - hex.length();
+        if(paddingLength > 0)
+        {
+            return String.format("%0"  +paddingLength + "d", 0) + hex;
+        }else{
+            return hex;
+        }
+    }
+
+    private static byte[] fromHex(String hex) throws NoSuchAlgorithmException {
+        byte[] bytes = new byte[hex.length() / 2];
+        for(int i = 0; i<bytes.length ;i++) {
+            bytes[i] = (byte)Integer.parseInt(hex.substring(2 * i, 2 * i + 2), 16);
+        }
+        return bytes;
     }
 }

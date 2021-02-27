@@ -2,10 +2,8 @@ package com.esliceu.forum.forum.utils.customSerializers;
 
 import com.esliceu.forum.forum.entities.User;
 import com.google.gson.*;
-import org.springframework.core.io.FileSystemResource;
 
 import java.lang.reflect.Type;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +17,11 @@ public class UserSerializer implements JsonSerializer<User> {
     @Override
     public JsonElement serialize(User user, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject jsonUser = new JsonObject();
-        jsonUser.addProperty("avatarUrl", "http://localhost:5000/images/users/" + user.getUser_id());
+        if(user.getAvatar() != null && user.getAvatar().length > 0) {
+            jsonUser.addProperty("avatarUrl", "http://localhost:5000/images/users/" + user.getUser_id());
+        } else {
+            jsonUser.add("avatarUrl", null);
+        }
         jsonUser.addProperty("email", user.getEmail());
         jsonUser.addProperty("name", user.getName());
         jsonUser.addProperty("role", user.getRole());

@@ -12,8 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 @RestController
@@ -36,7 +37,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody String payload) {
+    public ResponseEntity<String> login(@RequestBody String payload) throws NoSuchAlgorithmException, InvalidKeySpecException {
         Map<String, String> map = gson.fromJson(payload, HashMap.class);
         String email = map.get("email");
         String password = map.get("password");
@@ -50,7 +51,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody String payload) {
+    public ResponseEntity<String> register(@RequestBody String payload) throws NoSuchAlgorithmException {
         Map<String, String> map = gson.fromJson(payload, HashMap.class);
         String email = map.get("email");
         String password = map.get("password");
